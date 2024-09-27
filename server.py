@@ -14,6 +14,7 @@ server.bind(ADDR)
 clients = set()
 clients_lock = threading.Lock()
 
+
 def broadcast_message(message, addr=None):
     """Broadcast a message to all connected clients."""
     with clients_lock:
@@ -21,11 +22,12 @@ def broadcast_message(message, addr=None):
             try:
                 if addr:  # If an address is provided, include it in the message
                     client.sendall(f"[{addr}] {message}".encode(FORMAT))
-                else:  # Just send the message
+                else:  # Just send the message with no address
                     client.sendall(message.encode(FORMAT))
             except:
                 client.close()
                 clients.remove(client)
+
 
 def handle_client(conn, addr):
     """Handle communication with a single client."""
@@ -34,7 +36,7 @@ def handle_client(conn, addr):
     try:
         connected = True
         while connected:
-            msg = conn.recv(1024).decode(FORMAT)
+            msg = conn.recv(1024).decode(FORMAT)    # Receive message from client
             if not msg:
                 break
 
@@ -50,11 +52,12 @@ def handle_client(conn, addr):
             broadcast_message(f"{msg} at {timestamp}", addr)
 
     except ConnectionResetError:
-        print(f"[ERROR] Connection with {addr} lost.")
+        print(f"[ERROR] Connection with {addr} lost.")      # Log connection failure
     finally:
         with clients_lock:
             clients.remove(conn)
         conn.close()
+
 
 def start():
     """Start the server and listen for incoming connections."""
@@ -66,9 +69,10 @@ def start():
 
     while True:
         # Input from server admin
-        server_msg = input("Enter a message to send to all clients: ")
+        server_msg = input("Enter a message to send to all clients: \n")
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         broadcast_message(f"[Server] {server_msg} at {timestamp}")
+
 
 def accept_connections():
     """Accept new client connections."""

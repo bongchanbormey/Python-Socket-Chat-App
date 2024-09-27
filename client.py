@@ -9,14 +9,17 @@ ADDR = (SERVER, PORT)
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!DISCONNECT"
 
+
 def connect():
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client.connect(ADDR)
     return client
 
+
 def send(client, msg):
     message = msg.encode(FORMAT)
     client.send(message)
+
 
 def receive_messages(connection):
     """Listen for incoming messages from the server."""
@@ -28,6 +31,7 @@ def receive_messages(connection):
         except Exception as e:
             print("Error receiving message:", e)
             break
+
 
 def start():
     answer = input('Would you like to connect (yes/no)? ')
